@@ -1,0 +1,34 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: master # Or the branch you want to sync
+          token: ${{ secrets.PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Your Bot Name"
+          git config --global user.email "your-email@example.com"
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/posquit0/Awesome-CV
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Merge upstream changes
+        run: git merge upstream/master # Replace 'main' with the branch you're syncing
+
+      - name: Push changes to fork
+        run: git push origin master # Replace 'main' with your branch name
